@@ -79,6 +79,7 @@ Prises par l'étudiant (skill `decision-technique`), avec ses mots.
 | Titre de l'intercalaire (revue) | Blanc sur bande bleue, bleu sur fond blanc | Blanc sur bande bleue | Recommandation suivie : lisible, signe distinctif de la charte. Exception au critère « titres en bleu ». |
 | Exemples dans les modèles (revue) | Garder, retirer | Garder, marqués « à supprimer » | Recommandation suivie : montre l'usage de chaque style. |
 | Titre dans l'en-tête des pages (QA) | Champ STYLEREF lié au titre, champ TITLE, texte figé documenté | Champ STYLEREF « Titre du document » | Recommandation suivie : on remplit le titre une fois. |
+| Validation des modèles contre les schémas Office (après réparation PowerPoint) | Test XSD dans le dépôt, correction seule | Test XSD, schémas ISO 29500 dans tests/schemas/ | Recommandation suivie : aurait détecté l'erreur du style de tableau. |
 
 ## Tâches
 1. Socle : `pyproject.toml` (dépendances python-docx, python-pptx, pytest), `charte.toml` avec toutes les valeurs des pages « Couleurs » et « Hiérarchie du texte » de la charte, module de lecture des réglages et ses tests. Durée estimée : 30 min
