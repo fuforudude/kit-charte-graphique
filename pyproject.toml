@@ -12,6 +12,9 @@ dependencies = ["python-docx", "python-pptx"]
 [project.optional-dependencies]
 dev = ["pytest"]
 
+[project.scripts]
+kit-charte = "kit_charte.__main__:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
