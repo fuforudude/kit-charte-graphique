@@ -1,0 +1,115 @@
+# Seule source des valeurs de la charte (pages « Couleurs » et « Hiérarchie du texte »).
+
+# Couleurs interdites en texte.
+interdites_texte = ["orange", "orange_fonce"]
+
+[couleurs]
+bleu = "#0066CC"
+bleu_survol = "#0059B3"
+bleu_nuit = "#0A3561"
+orange = "#FF6633"
+orange_fonce = "#DD390E"
+jaune = "#FFCC01"
+vert = "#38AE1E"
+texte = "#212529"
+texte_secondaire = "#606060"
+filet = "#E7E7E7"
+fond = "#F6F6F6"
+blanc = "#FFFFFF"
+succes = "#1C781A"
+avertissement = "#B95D00"
+erreur = "#FF3535"
+
+[polices]
+texte = "Roboto"
+titre = "Roboto Condensed"
+medium = "Roboto Medium"
+repli = "Arial"
+
+[styles.titre_document]
+police = "Roboto Condensed"
+gras = true
+capitales = true
+taille = 28
+couleur = "bleu"
+
+[styles.titre1]
+police = "Roboto"
+gras = true
+capitales = true
+taille = 18
+couleur = "bleu"
+
+[styles.titre2]
+police = "Roboto"
+gras = true
+taille = 14
+couleur = "bleu_nuit"
+
+[styles.titre3]
+police = "Roboto Medium"
+taille = 12
+couleur = "texte"
+
+[styles.corps]
+police = "Roboto"
+taille = 11
+interligne = 1.3
+couleur = "texte"
+alignement = "gauche"
+
+[styles.lien]
+police = "Roboto"
+taille = 11
+couleur = "bleu"
+souligne = true
+
+[styles.legende]
+police = "Roboto"
+taille = 9
+couleur = "texte_secondaire"
+
+[styles.chiffre_cle]
+police = "Roboto Condensed"
+gras = true
+taille = 36
+couleur = "bleu"
+
+[tableau]
+entete_fond = "bleu"
+entete_texte = "blanc"
+entete_police = "Roboto"
+entete_gras = true
+filets = "filet"
+
+[presentation]
+format = "16:9"
+titres_police = "Roboto"
+titres_gras = true
+titres_couleur = "bleu"
+texte_police = "Roboto"
+texte_couleur = "texte"
+chiffres_police = "Roboto Condensed"
+chiffres_gras = true
+chiffres_couleur = "bleu"
+
+# Choix de l'équipe : absent de la charte relevée.
+# Tailles en points (corps : un par niveau de puce, le dernier vaut pour les suivants), marge en cm.
+[presentation.tailles]
+titre = 32
+titre_couverture = 40
+titre_intercalaire = 36
+corps = [20, 18, 16, 14]
+chiffre_cle = 54
+libelle = 16
+pied = 10
+marge_cm = 1.69
+
+[document]
+societe = "[Nom de la société]"
+logo = "logos/e-leclerc-horizontal.png"
+
+# Pour mémoire, en pixels.
+[formes]
+rayon_carte = 6
+rayon_bouton = 999

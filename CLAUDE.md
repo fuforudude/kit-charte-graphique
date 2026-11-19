@@ -3,7 +3,9 @@
 Kit de modèles de documents (dossier et présentation) à la charte graphique E.Leclerc relevée par l'équipe, pour Microsoft Office et Google, utilisé par l'équipe du projet d'étude M1 « Plateforme décisionnelle de pilotage commercial ». Une appli web de conversion des documents existants viendra dans un second temps.
 
 ## Commandes
-- Lancer, compiler, tester : à définir avec les décisions techniques de la première spec (`docs/specs/`).
+- Installer : `python -m venv .venv` puis `.venv\Scripts\python -m pip install -e ".[dev]"`.
+- Générer les modèles : `.venv\Scripts\python -m kit_charte` (écrit `modeles/dossier.dotx` et `modeles/presentation.potx`, à commiter).
+- Tester : `lourd .venv/Scripts/python -m pytest` ; test ciblé : `.venv\Scripts\python -m pytest tests/test_dossier.py`.
 - Les commandes lourdes (génération de tous les modèles, suite de tests) se lancent via `lourd` (plugin `socle`) : `lourd <commande>`.
 
 ## Référence

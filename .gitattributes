@@ -1,0 +1,5 @@
+*.dotx binary
+*.potx binary
+*.png binary
+*.ttf binary
+*.svg -text
