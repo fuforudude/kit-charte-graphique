@@ -1,5 +1,6 @@
 """Génération du modèle de dossier Word (.dotx) à partir de la charte."""
 import zipfile
+from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 
@@ -58,7 +59,7 @@ def _appliquer(st, s: Style) -> None:
             st.paragraph_format.alignment = _ALIGNEMENTS[s.alignement]
 
 
-def _style(doc, nom: str, type_, s: Style) -> None:
+def _style(doc, nom: str, type_, s: Style, galerie: bool = False) -> None:
     try:
         st = doc.styles[nom]
     except KeyError:
@@ -66,6 +67,8 @@ def _style(doc, nom: str, type_, s: Style) -> None:
         if type_ == WD_STYLE_TYPE.PARAGRAPH:
             st.base_style = doc.styles["Normal"]
     _appliquer(st, s)
+    if galerie:
+        st.quick_style = True
 
 
 def _style_tableau(doc, charte: Charte) -> None:
@@ -82,9 +85,9 @@ def _style_tableau(doc, charte: Charte) -> None:
         '<w:bottom w:w="60" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr>'
     ))
     st.element.append(parse_xml(
-        f'<w:tblStylePr {nsdecls("w")} w:type="firstRow"><w:rPr>{gras}'
+        f'<w:tblStylePr {nsdecls("w")} w:type="firstRow"><w:rPr>'
         f'<w:rFonts w:ascii="{t.entete_police}" w:hAnsi="{t.entete_police}" '
-        f'w:eastAsia="{t.entete_police}" w:cs="{t.entete_police}"/>'
+        f'w:eastAsia="{t.entete_police}" w:cs="{t.entete_police}"/>{gras}'
         f'<w:color w:val="{_hexa(t.entete_texte)}"/></w:rPr>'
         f'<w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="{_hexa(t.entete_fond)}"/></w:tcPr>'
         '</w:tblStylePr>'
@@ -151,6 +154,21 @@ def _entete_pied(doc, charte: Charte) -> None:
     _champ(pied, "PAGE", "1")
 
 
+def _metadonnees(doc, charte: Charte) -> None:
+    p = doc.core_properties
+    p.title = "Modèle de dossier"
+    p.author = charte.document.societe
+    p.comments = ""
+    p.created = p.modified = datetime.now()
+
+
+def _retirer_styles_with_effects(doc) -> None:
+    """Supprime la partie héritée de Word 2010 : relation retirée, la partie et son type ne sont plus écrits."""
+    rels = doc.part.rels
+    for rid in [r for r, rel in rels.items() if rel.reltype.endswith("/stylesWithEffects")]:
+        rels.pop(rid)
+
+
 def generer_dossier(charte: Charte, sortie: Path, racine: Path) -> Path:
     logo = Path(racine) / charte.document.logo
     if not logo.is_file():
@@ -159,12 +177,13 @@ def generer_dossier(charte: Charte, sortie: Path, racine: Path) -> Path:
     doc = Document()
     s = charte.styles
     _style(doc, "Normal", WD_STYLE_TYPE.PARAGRAPH, s["corps"])
-    _style(doc, "Titre du document", WD_STYLE_TYPE.PARAGRAPH, s["titre_document"])
+    _style(doc, "Titre du document", WD_STYLE_TYPE.PARAGRAPH, s["titre_document"], galerie=True)
     for n, cle in ((1, "titre1"), (2, "titre2"), (3, "titre3")):
         _style(doc, f"Heading {n}", WD_STYLE_TYPE.PARAGRAPH, s[cle])
-    _style(doc, "Lien", WD_STYLE_TYPE.CHARACTER, s["lien"])
+        _style(doc, f"Heading {n} Char", WD_STYLE_TYPE.CHARACTER, s[cle])
+    _style(doc, "Lien", WD_STYLE_TYPE.CHARACTER, s["lien"], galerie=True)
     _style(doc, "Caption", WD_STYLE_TYPE.PARAGRAPH, s["legende"])
-    _style(doc, "Chiffre clé", WD_STYLE_TYPE.PARAGRAPH, s["chiffre_cle"])
+    _style(doc, "Chiffre clé", WD_STYLE_TYPE.PARAGRAPH, s["chiffre_cle"], galerie=True)
     _style_tableau(doc, charte)
 
     section = doc.sections[0]
@@ -174,6 +193,9 @@ def generer_dossier(charte: Charte, sortie: Path, racine: Path) -> Path:
     _couverture(doc, charte, logo)
     _sommaire_et_exemple(doc)
     _entete_pied(doc, charte)
+
+    _metadonnees(doc, charte)
+    _retirer_styles_with_effects(doc)
 
     sortie = Path(sortie)
     sortie.parent.mkdir(parents=True, exist_ok=True)
