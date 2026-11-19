@@ -42,7 +42,7 @@ Modèle de dossier :
 Modèle de présentation :
 - [ ] Les diapositives sont au format 16:9.
 - [ ] Le masque propose au moins ces dispositions : titre, intercalaire de section, contenu, chiffres clés, tableau, fin.
-- [ ] Les titres de diapositive sont en Roboto gras `#0066CC`, le texte en Roboto `#212529`, les chiffres clés en Roboto Condensed gras `#0066CC`.
+- [ ] Les titres de diapositive sont en Roboto gras `#0066CC` (sauf l'intercalaire : titre blanc gras sur bande bleue), le texte en Roboto `#212529`, les chiffres clés en Roboto Condensed gras `#0066CC`.
 - [ ] Le logo n'apparaît que sur la diapositive de titre et la diapositive de fin.
 - [ ] Aucun texte n'utilise l'orange comme couleur.
 
@@ -75,6 +75,9 @@ Prises par l'étudiant (skill `decision-technique`), avec ses mots.
 | Tailles des diapositives (absentes de la charte) | Dans charte.toml, constantes dans le code | Dans charte.toml, marquées « choix de l'équipe » | Recommandation suivie : source unique. |
 | Styles caractère liés aux titres (revue) | Les mettre à la charte, supprimer le lien | Les mettre à la charte | Recommandation suivie : Word garde son comportement habituel. |
 | Ancienne copie des styles stylesWithEffects.xml (revue) | La retirer, la garder avec contrôle visuel | La retirer | Recommandation suivie : aucun risque de vieux styles repris. |
+| Style du tableau de présentation (revue) | Style personnalisé depuis charte.toml, couleurs sur l'exemple, garder le style PowerPoint | Style personnalisé, déclaré par défaut | Recommandation suivie : source unique, s'applique aux nouveaux tableaux. |
+| Titre de l'intercalaire (revue) | Blanc sur bande bleue, bleu sur fond blanc | Blanc sur bande bleue | Recommandation suivie : lisible, signe distinctif de la charte. Exception au critère « titres en bleu ». |
+| Exemples dans les modèles (revue) | Garder, retirer | Garder, marqués « à supprimer » | Recommandation suivie : montre l'usage de chaque style. |
 
 ## Tâches
 1. Socle : `pyproject.toml` (dépendances python-docx, python-pptx, pytest), `charte.toml` avec toutes les valeurs des pages « Couleurs » et « Hiérarchie du texte » de la charte, module de lecture des réglages et ses tests. Durée estimée : 30 min
