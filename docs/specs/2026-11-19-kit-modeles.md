@@ -72,6 +72,9 @@ Prises par l'étudiant (skill `decision-technique`), avec ses mots.
 | Format des réglages | TOML, YAML, code Python | TOML | Recommandation suivie : lisible, sans dépendance. |
 | Livraison des modèles | Versionnés dans le dépôt, Release GitHub, générés par chacun | Versionnés dans `modeles/` | Recommandation suivie. |
 | Police | Dans le dépôt, lien Google Fonts | Dans le dépôt, avec la licence OFL | Recommandation suivie. |
+| Tailles des diapositives (absentes de la charte) | Dans charte.toml, constantes dans le code | Dans charte.toml, marquées « choix de l'équipe » | Recommandation suivie : source unique. |
+| Styles caractère liés aux titres (revue) | Les mettre à la charte, supprimer le lien | Les mettre à la charte | Recommandation suivie : Word garde son comportement habituel. |
+| Ancienne copie des styles stylesWithEffects.xml (revue) | La retirer, la garder avec contrôle visuel | La retirer | Recommandation suivie : aucun risque de vieux styles repris. |
 
 ## Tâches
 1. Socle : `pyproject.toml` (dépendances python-docx, python-pptx, pytest), `charte.toml` avec toutes les valeurs des pages « Couleurs » et « Hiérarchie du texte » de la charte, module de lecture des réglages et ses tests. Durée estimée : 30 min
