@@ -14,15 +14,16 @@ Ce kit permet de produire des documents aux couleurs de la charte graphique E.Le
 
 ## 1. Installer les polices
 
-Les modèles utilisent Roboto, Roboto Medium et Roboto Condensed. Installez-les une fois sur chaque ordinateur en suivant `polices/LISEZMOI.md`, puis redémarrez Word et PowerPoint. Sans cela, les modèles s'affichent avec une police de remplacement (Arial).
+Les modèles utilisent Roboto, Roboto Medium et Roboto Condensed. Installez-les une fois sur chaque ordinateur en suivant `polices/LISEZMOI.md`, puis redémarrez Word et PowerPoint. Sans cela, Word et PowerPoint remplacent les polices par une autre : l'installation est donc nécessaire.
 
 ## 2. Utiliser le modèle de dossier dans Word
 
 1. Dans l'Explorateur de fichiers, faites un **double-clic** sur `modeles/dossier.dotx` : Word crée un **nouveau document** (le modèle lui-même n'est pas modifié).
-2. Sur la couverture, remplacez chaque champ entre crochets : `[Titre du document]`, `[Sous-titre]`, `[JJ/MM/AAAA]`, `[x.y]`, `[Nom, rôle]`, `[Statut]`, `[Destinataires]`.
-3. Écrivez vos titres avec les styles **Titre 1**, **Titre 2** et **Titre 3** (onglet Accueil, galerie de styles). Les styles « Titre du document », « Lien » et « Chiffre clé » sont aussi dans la galerie.
+2. Sur la couverture, remplacez chaque champ entre crochets : `[Titre du document]`, `[Sous-titre]`, `[JJ/MM/AAAA]`, `[x.y]`, `[Nom, rôle]`, `[Nom de la société]`, `[Brouillon / Validé]`, `[Destinataires]`.
+   Le titre répété dans l'en-tête des pages 2 et suivantes se met à jour seul avec les champs : **Ctrl+A** puis **F9**, ou clic droit, **Mettre à jour le champ**.
+3. Écrivez vos titres avec les styles **Titre 1**, **Titre 2** et **Titre 3** (onglet Accueil, galerie de styles). Les styles « Titre du document », « Lien » et « Chiffre clé » sont aussi dans la galerie. Le style « Légende » (nom Word « Caption ») sert aux légendes de tableaux ; il peut être masqué dans la galerie : Styles, Options, **Tous les styles**. Les autres styles intégrés de Word (Titre, Citation, etc.) ne sont pas à la charte : n'utilisez que ceux listés ici.
 4. Pour **mettre à jour le sommaire** : clic droit dessus, puis « Mettre à jour les champs », puis « Mettre à jour toute la table ».
-5. **Supprimez la page d'exemple** qui suit le sommaire quand vous n'en avez plus besoin.
+5. **Supprimez l'exemple** qui suit juste le sommaire (il n'a pas de page séparée) quand vous n'en avez plus besoin.
 
 ## 3. Utiliser le modèle de présentation dans PowerPoint
 
@@ -31,7 +32,7 @@ Les modèles utilisent Roboto, Roboto Medium et Roboto Condensed. Installez-les 
 
 | Disposition | Usage |
 |---|---|
-| Titre | Première diapositive : titre, sous-titre, date, logo |
+| Titre | Première diapositive : titre, sous-titre, logo |
 | Intercalaire | Début d'une nouvelle partie (bande bleue) |
 | Contenu | Titre et texte à puces |
 | Chiffres clés | Trois chiffres avec leur libellé |
@@ -47,6 +48,8 @@ Dans Word comme dans PowerPoint :
 1. Fichier, **Options**, **Enregistrement**.
 2. Cochez **Incorporer les polices dans le fichier**.
 3. Fichier, **Enregistrer sous**, type **PDF**.
+
+La vraie preuve est la liste des polices dans les propriétés du PDF : elle doit montrer Roboto, Roboto Condensed et Roboto Medium.
 
 ## 5. Importer dans Google Docs et Google Slides
 

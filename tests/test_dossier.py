@@ -119,7 +119,10 @@ def test_en_tete_pied_et_premiere_page(modele):
     charte, chemin = modele
     section = ouvrir_modele_pour_test(chemin).sections[0]
     assert section.different_first_page_header_footer is True
-    assert section.header.paragraphs[0].text == "[Titre du document]"
+    entete = section.header.paragraphs[0]
+    assert entete.text == "[Titre du document]"
+    assert 'STYLEREF "Titre du document"' in entete._p.xml
+    _verifie_champ(entete._p.xml, 'STYLEREF "Titre du document"')
     pied = section.footer.paragraphs[0]
     assert charte.document.societe in pied.text
     _verifie_champ(pied._p.xml, "PAGE")

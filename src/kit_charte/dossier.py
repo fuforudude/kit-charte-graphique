@@ -150,7 +150,8 @@ def _sommaire_et_exemple(doc) -> None:
 def _entete_pied(doc, charte: Charte) -> None:
     section = doc.sections[0]
     section.different_first_page_header_footer = True
-    section.header.paragraphs[0].text = "[Titre du document]"
+    # Reprend le titre saisi sur la couverture (style « Titre du document ») après mise à jour des champs.
+    _champ(section.header.paragraphs[0], 'STYLEREF "Titre du document"', "[Titre du document]")
     pied = section.footer.paragraphs[0]
     pied.text = f"{charte.document.societe}  |  Page "
     _champ(pied, "PAGE", "1")
