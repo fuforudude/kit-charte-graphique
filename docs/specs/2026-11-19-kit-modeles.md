@@ -1,6 +1,6 @@
 # Kit de modèles à la charte : dossier et présentation
 
-Statut : brouillon
+Statut : validée
 Date : 2026-11-19
 
 ## Besoin
