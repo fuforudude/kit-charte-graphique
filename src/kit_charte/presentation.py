@@ -160,10 +160,10 @@ def _style_tableau(prs, charte: Charte) -> None:
     gras = ' b="on"' if t.entete_gras else ""
     xml = (f'<a:tblStyleLst {nsdecls("a")} def="{ID_STYLE_TABLEAU}">'
            f'<a:tblStyle styleId="{ID_STYLE_TABLEAU}" styleName="{NOM_THEME}">'
-           f'<a:wholeTbl><a:tcTxStyle><a:font><a:latin typeface="{escape(p.texte_police)}"/></a:font>'
+           f'<a:wholeTbl><a:tcTxStyle><a:font><a:latin typeface="{escape(p.texte_police)}"/><a:ea typeface=""/><a:cs typeface=""/></a:font>'
            f'<a:srgbClr val="{p.texte_couleur[1:]}"/></a:tcTxStyle>'
            f'<a:tcStyle><a:tcBdr>{filets}</a:tcBdr><a:fill><a:noFill/></a:fill></a:tcStyle></a:wholeTbl>'
-           f'<a:firstRow><a:tcTxStyle{gras}><a:font><a:latin typeface="{escape(t.entete_police)}"/></a:font>'
+           f'<a:firstRow><a:tcTxStyle{gras}><a:font><a:latin typeface="{escape(t.entete_police)}"/><a:ea typeface=""/><a:cs typeface=""/></a:font>'
            f'<a:srgbClr val="{t.entete_texte[1:]}"/></a:tcTxStyle>'
            f'<a:tcStyle><a:tcBdr/><a:fill><a:solidFill><a:srgbClr val="{t.entete_fond[1:]}"/></a:solidFill>'
            f'</a:fill></a:tcStyle></a:firstRow></a:tblStyle></a:tblStyleLst>')
