@@ -42,7 +42,21 @@ class Tableau:
 
 
 @dataclass(frozen=True)
+class TaillesPresentation:
+    """Choix de l'équipe, absents de la charte : tailles en points, marge en cm."""
+    titre: float
+    titre_couverture: float
+    titre_intercalaire: float
+    corps: tuple[float, ...]
+    chiffre_cle: float
+    libelle: float
+    pied: float
+    marge_cm: float
+
+
+@dataclass(frozen=True)
 class Presentation:
+    tailles: TaillesPresentation
     format: str
     titres_police: str
     titres_gras: bool
@@ -91,6 +105,24 @@ def _couleur_texte(couleurs: dict[str, str], interdites: tuple[str, ...], nom: s
     return hexa
 
 
+def _positif(valeur, ou: str) -> float:
+    if isinstance(valeur, bool) or not isinstance(valeur, (int, float)) or valeur <= 0:
+        raise CharteError(f"{ou} : nombre positif attendu, reçu {valeur!r}")
+    return valeur
+
+
+def _tailles(brut: dict) -> TaillesPresentation:
+    t = dict(brut)
+    corps = t.get("corps")
+    if not isinstance(corps, list) or not corps:
+        raise CharteError(f"presentation.tailles.corps : liste de tailles attendue, reçu {corps!r}")
+    t["corps"] = tuple(_positif(v, "presentation.tailles.corps") for v in corps)
+    for cle, valeur in t.items():
+        if cle != "corps":
+            _positif(valeur, f"presentation.tailles.{cle}")
+    return TaillesPresentation(**t)
+
+
 def lire_charte(chemin: Path | str = CHARTE_PAR_DEFAUT) -> Charte:
     with open(chemin, "rb") as f:
         brut = tomllib.load(f)
@@ -115,6 +147,7 @@ def lire_charte(chemin: Path | str = CHARTE_PAR_DEFAUT) -> Charte:
         p = dict(brut["presentation"])
         for cle in ("titres_couleur", "texte_couleur", "chiffres_couleur"):
             p[cle] = _couleur_texte(couleurs, interdites, p[cle], f"presentation.{cle}")
+        p["tailles"] = _tailles(p["tailles"])
 
         return Charte(
             couleurs=dict(couleurs),

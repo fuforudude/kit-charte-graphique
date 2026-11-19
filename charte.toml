@@ -93,6 +93,18 @@ chiffres_police = "Roboto Condensed"
 chiffres_gras = true
 chiffres_couleur = "bleu"
 
+# Choix de l'équipe : absent de la charte relevée.
+# Tailles en points (corps : un par niveau de puce, le dernier vaut pour les suivants), marge en cm.
+[presentation.tailles]
+titre = 32
+titre_couverture = 40
+titre_intercalaire = 36
+corps = [20, 18, 16, 14]
+chiffre_cle = 54
+libelle = 16
+pied = 10
+marge_cm = 1.69
+
 [document]
 societe = "[Nom de la société]"
 logo = "logos/e-leclerc-horizontal.png"
