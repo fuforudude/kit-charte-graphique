@@ -1,6 +1,6 @@
 # Kit de modèles à la charte : dossier et présentation
 
-Statut : validée
+Statut : livrée
 Date : 2026-11-19
 
 ## Besoin
@@ -98,3 +98,10 @@ Durée estimée du jalon : 2 h 30, contrôles, QA et livraison compris.
 - Logo : le dossier `logos/` cité par la charte n'est pas dans le dépôt. Il faut au minimum `e-leclerc-horizontal.svg`. Word et PowerPoint gèrent mal le SVG depuis python-docx et python-pptx : une version PNG en haute définition est nécessaire. À fournir par l'étudiant, ou à convertir.
 - Polices : récupérer les fichiers Roboto demande un téléchargement depuis le dépôt officiel Google Fonts. Il faut l'accord de l'étudiant avant de lancer la tâche 2.
 - Python 3.14 est installé, mais pas python-docx, python-pptx ni pytest : la tâche 1 les installe dans un environnement virtuel du projet.
+
+## Livraison
+- Livrée le 2026-11-19 sur la branche `agents/kit-modeles` : 57 tests passent, QA acceptée sans défaut bloquant.
+- Écarts avec le prévu : tâche supplémentaire de récupération du logo sur www.e.leclerc (absent du dépôt) ; correction de la zone de protection du logo et en-tête lié au titre par champ STYLEREF, issues de la revue et de la QA ; ADR 0001 et 0002.
+- Non vérifié par les agents (ni Word, ni PowerPoint, ni LibreOffice sur la machine) : ouverture sans message de réparation, rendu visuel, import Google. Liste de contrôle visuel dans le README, à faire par l'étudiant.
+- Reste mineur : le texte d'aide de la disposition « Titre » indique « Sous-titre, date ».
+- Durée : estimée 2 h 30, réelle environ 50 min de développement (11 h 18 à 12 h 10), allers-retours de revue et de QA compris. Écart : les agents ont tous mis 3 à 5 fois moins que l'estimation.
