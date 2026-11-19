@@ -185,3 +185,10 @@ def test_styles_dans_la_galerie(modele):
     st = ouvrir_modele_pour_test(modele[1]).styles
     for nom in ("Titre du document", "Chiffre clé", "Lien"):
         assert st[nom].quick_style is True
+
+
+def test_zone_de_protection_du_logo(modele):
+    """Charte §04 : vide d'au moins x (hauteur du logo) sous le logo de la couverture."""
+    doc = ouvrir_modele_pour_test(modele[1])
+    hauteur = doc.inline_shapes[0].height
+    assert doc.paragraphs[0].paragraph_format.space_after >= hauteur

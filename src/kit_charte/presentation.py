@@ -111,10 +111,12 @@ def _logo(disposition, chemin: Path, centre: bool, marge: int) -> str:
     cx, cy = image.scale(None, H_LOGO)
     if cx > L_LOGO_MAX:
         cx, cy = image.scale(L_LOGO_MAX, None)
-    x = (LARGEUR - cx) // 2 if centre else marge
+    # Zone de protection (charte §04) : au moins x (= cy, la hauteur du logo) entre le logo et le bord.
+    bord = max(marge, cy)
+    x = (LARGEUR - cx) // 2 if centre else bord
     return (f'<p:pic><p:nvPicPr><p:cNvPr id="0" name="Logo"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/>'
             f'</p:cNvPicPr><p:nvPr userDrawn="1"/></p:nvPicPr><p:blipFill><a:blip r:embed="{rid}"/>'
-            f'<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>{_rect(x, marge, cx, cy)}</p:spPr></p:pic>')
+            f'<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>{_rect(x, bord, cx, cy)}</p:spPr></p:pic>')
 
 
 def _remplacer_formes(element, formes: list[str]) -> None:

@@ -245,3 +245,16 @@ def test_changer_une_couleur_change_le_style(racine):
 def test_logo_absent(tmp_path):
     with pytest.raises(FileNotFoundError, match="e-leclerc-horizontal.png"):
         generer_presentation(lire_charte(), tmp_path / "modele.potx", tmp_path)
+
+
+@pytest.mark.parametrize("nom", ["Titre", "Fin"])
+def test_zone_de_protection_du_logo(prs, nom):
+    """Charte §04 : vide d'au moins x (hauteur du logo) autour du logo, bords de la diapositive compris."""
+    formes = list(dispositions(prs)[nom].shapes)
+    logo = next(f for f in formes if f.name == "Logo")
+    x = logo.height
+    assert logo.left >= x and logo.top >= x
+    gauche, haut, droite, bas = logo.left - x, logo.top - x, logo.left + logo.width + x, logo.top + logo.height + x
+    for f in formes:
+        if f is not logo:
+            assert not (f.left < droite and f.left + f.width > gauche and f.top < bas and f.top + f.height > haut), f.name

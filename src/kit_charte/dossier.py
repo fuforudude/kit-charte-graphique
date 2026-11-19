@@ -112,7 +112,9 @@ def _champ(paragraphe, instruction: str, resultat: str) -> None:
 
 
 def _couverture(doc, charte: Charte, logo: Path) -> None:
-    doc.add_picture(str(logo), width=Cm(6))
+    image = doc.add_picture(str(logo), width=Cm(6))
+    # Zone de protection (charte §04) : un vide au moins égal à x, la hauteur du logo, sous le logo.
+    doc.paragraphs[-1].paragraph_format.space_after = image.height
     doc.add_paragraph("[Titre du document]", style="Titre du document")
     for ligne in (
         "[Sous-titre]",
