@@ -3,11 +3,13 @@ import zipfile
 import zlib
 
 import pytest
+from lxml import etree
+from pptx.enum.shapes import PP_PLACEHOLDER
 from pptx.opc.constants import CONTENT_TYPE as CT
 from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 
 from kit_charte.charte import CHARTE_PAR_DEFAUT, lire_charte
-from kit_charte.presentation import MARQUE_EXEMPLE, generer_presentation, ouvrir_modele
+from kit_charte.presentation import ID_STYLE_TABLEAU, MARQUE_EXEMPLE, generer_presentation, ouvrir_modele
 
 A = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
 P = "{http://schemas.openxmlformats.org/presentationml/2006/main}"
@@ -59,6 +61,7 @@ def tous_les_xml(prs):
 
 def test_format_16_9(prs):
     assert (prs.slide_width, prs.slide_height) == (12192000, 6858000)
+    assert prs._element.sldSz.get("type") is None
 
 
 def test_six_dispositions_nommees(prs):
@@ -99,7 +102,7 @@ def test_fond_blanc(prs):
 def test_chiffres_cles(prs):
     d = dispositions(prs)["Chiffres clés"]
     phs = {ph.placeholder_format.idx: ph for ph in d.placeholders}
-    assert phs[0].placeholder_format.type is not None  # titre
+    assert phs[0].placeholder_format.type == PP_PLACEHOLDER.TITLE
     for idx in (10, 11, 12):
         niveau = phs[idx]._element.find(f".//{A}lstStyle/{A}lvl1pPr")
         assert def_rpr(niveau) == ("Roboto Condensed", 54, "#0066CC", True)
@@ -123,10 +126,87 @@ def test_intercalaire_bande_bleue_titre_blanc_gras(prs):
     assert (couleur, gras) == ("#FFFFFF", True)
 
 
-def test_aucune_couleur_orange(prs):
+def test_aucune_couleur_interdite(prs):
+    charte = lire_charte()
+    interdites = [charte.couleurs[nom][1:].upper() for nom in charte.interdites_texte]
+    assert interdites
     for xml in tous_les_xml(prs):
-        assert "FF6633" not in xml and "DD390E" not in xml
+        for hexa in interdites:
+            assert hexa not in xml
         assert 'VAL="ACCENT2"' not in xml
+
+
+def test_titre_de_couverture_herite_du_masque(prs):
+    titre = next(ph for ph in dispositions(prs)["Titre"].placeholders
+                 if ph.placeholder_format.type == PP_PLACEHOLDER.CENTER_TITLE)
+    assert not titre._element.findall(f".//{A}solidFill")
+    assert all(e.get("b") is None for e in titre._element.iter(f"{A}defRPr", f"{A}rPr"))
+
+
+def generer_avec(racine, de, vers):
+    """Génère le modèle depuis une copie de charte.toml où `de` est remplacé par `vers`."""
+    texte = CHARTE_PAR_DEFAUT.read_text(encoding="utf-8")
+    assert texte.count(de) == 1, de
+    toml = racine / "charte.toml"
+    toml.write_text(texte.replace(de, vers), encoding="utf-8")
+    return generer_presentation(lire_charte(toml), racine / "modele.potx", racine)
+
+
+def styles_de_tableau(modele):
+    with zipfile.ZipFile(modele) as z:
+        return etree.fromstring(z.read("ppt/tableStyles.xml"))
+
+
+def test_style_de_tableau_par_defaut(modele, prs):
+    liste = styles_de_tableau(modele)
+    assert liste.get("def") == ID_STYLE_TABLEAU
+    style = liste.find(f"{A}tblStyle[@styleId='{ID_STYLE_TABLEAU}']")
+    entete = style.find(f"{A}firstRow")
+    assert entete.find(f"{A}tcStyle/{A}fill//{A}srgbClr").get("val") == "0066CC"
+    texte = entete.find(f"{A}tcTxStyle")
+    assert (texte.find(f"{A}srgbClr").get("val"), texte.get("b")) == ("FFFFFF", "on")
+    assert texte.find(f"{A}font/{A}latin").get("typeface") == "Roboto"
+    filets = style.findall(f"{A}wholeTbl/{A}tcStyle/{A}tcBdr/*//{A}srgbClr")
+    assert filets and {f.get("val") for f in filets} == {"E7E7E7"}
+    assert style.find(f"{A}band1H") is None and style.find(f"{A}band1V") is None
+    tableau = next(s for s in prs.slides[DISPOSITIONS.index("Tableau")].shapes if s.has_table).table
+    assert tableau._tbl.tblPr.find(f"{A}tableStyleId").text == ID_STYLE_TABLEAU
+    assert tableau.first_row and not tableau.horz_banding
+
+
+def test_changer_entete_fond_change_le_style_de_tableau(racine):
+    modele = generer_avec(racine, 'entete_fond = "bleu"', 'entete_fond = "bleu_nuit"')
+    entete = styles_de_tableau(modele).find(f"{A}tblStyle/{A}firstRow")
+    assert entete.find(f"{A}tcStyle/{A}fill//{A}srgbClr").get("val") == "0A3561"
+
+
+def test_changer_une_taille_change_le_titre(racine):
+    prs = ouvrir_modele(generer_avec(racine, "titre = 32", "titre = 30"))
+    titre = prs.slide_master._element.find(f"{P}txStyles/{P}titleStyle/{A}lvl1pPr")
+    assert def_rpr(titre)[1] == 30
+
+
+def test_metadonnees(modele, prs):
+    cp = prs.core_properties
+    assert cp.title == "Modèle de présentation"
+    assert cp.author == lire_charte().document.societe
+    assert not cp.last_modified_by and not cp.comments
+    assert cp.created.year >= 2026
+    with zipfile.ZipFile(modele) as z:
+        noms = z.namelist()
+        assert "docProps/thumbnail.jpeg" not in noms
+        assert b"thumbnail" not in z.read("_rels/.rels")
+        for nom in (n for n in noms if n.startswith("docProps/")):
+            contenu = z.read(nom)
+            assert b"python-pptx" not in contenu and b"Steve Canny" not in contenu, nom
+        assert b"4:3" not in z.read("docProps/app.xml")
+    theme = etree.fromstring(prs.slide_master.part.part_related_by(RT.THEME).blob)
+    assert theme.get("name") == theme.find(f".//{A}clrScheme").get("name") == "Charte E.Leclerc"
+
+
+def test_puces_en_police_de_repli(prs):
+    puces = prs.slide_master._element.findall(f"{P}txStyles/{P}bodyStyle/*/{A}buFont")
+    assert puces and {b.get("typeface") for b in puces} == {lire_charte().polices.repli}
 
 
 def test_logo_seulement_sur_titre_et_fin(prs):
