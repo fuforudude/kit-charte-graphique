@@ -52,6 +52,7 @@ def _verifie(st, police, taille, couleur, gras=False, capitales=False):
     assert str(st.font.color.rgb) == couleur
     assert bool(st.font.bold) is gras
     assert bool(st.font.all_caps) is capitales
+    assert st.font.color.theme_color is None
     rfonts = st.element.rPr.find(f"{W}rFonts")
     assert {k.split("}")[1]: v for k, v in rfonts.attrib.items()} == {
         "ascii": police, "hAnsi": police, "eastAsia": police, "cs": police}
@@ -63,6 +64,9 @@ def test_styles(modele):
     _verifie(st["Heading 1"], "Roboto", 18, "0066CC", True, True)
     _verifie(st["Heading 2"], "Roboto", 14, "0A3561", True)
     _verifie(st["Heading 3"], "Roboto Medium", 12, "212529")
+    for n, args in ((1, ("Roboto", 18, "0066CC", True, True)), (2, ("Roboto", 14, "0A3561", True)),
+                    (3, ("Roboto Medium", 12, "212529"))):
+        _verifie(st[f"Heading {n} Char"], *args)
     _verifie(st["Normal"], "Roboto", 11, "212529")
     assert st["Normal"].paragraph_format.line_spacing == 1.3
     assert st["Normal"].paragraph_format.alignment == 0
@@ -78,13 +82,16 @@ def test_style_tableau(modele):
     ligne = re.search(r'<w:tblStylePr w:type="firstRow">.*?</w:tblStylePr>', bloc, re.S).group(0)
     assert 'w:fill="0066CC"' in ligne
     assert '<w:color w:val="FFFFFF"/>' in ligne and "<w:b/>" in ligne
+    assert ligne.index("<w:rFonts") < ligne.index("<w:b/>") < ligne.index("<w:color")
     assert 'w:ascii="Roboto"' in ligne
     assert bloc.count('w:color="E7E7E7"') == 6
 
 
 def test_pas_de_texte_orange(modele):
+    charte, chemin = modele
+    interdites = "|".join(charte.couleurs[n].lstrip("#") for n in charte.interdites_texte)
     for partie in ("word/styles.xml", "word/document.xml"):
-        assert not re.search(r'<w:color w:val="(FF6633|DD390E)"', _xml(modele[1], partie), re.I)
+        assert not re.search(rf'<w:color w:val="({interdites})"', _xml(chemin, partie), re.I)
 
 
 def test_logo_unique_sur_la_couverture(modele):
@@ -115,7 +122,7 @@ def test_en_tete_pied_et_premiere_page(modele):
     assert section.header.paragraphs[0].text == "[Titre du document]"
     pied = section.footer.paragraphs[0]
     assert charte.document.societe in pied.text
-    assert "PAGE" in pied._p.xml
+    _verifie_champ(pied._p.xml, "PAGE")
     assert section.first_page_header.is_linked_to_previous
     assert section.first_page_footer.is_linked_to_previous
     assert section.page_width.cm == pytest.approx(21, abs=0.01)
@@ -123,7 +130,14 @@ def test_en_tete_pied_et_premiere_page(modele):
     assert section.left_margin.cm == pytest.approx(2.5, abs=0.01)
 
 
+def _verifie_champ(xml, instruction):
+    assert re.search(
+        r'fldCharType="begin".*?<w:instrText[^>]*>[^<]*' + re.escape(instruction)
+        + r'[^<]*</w:instrText>.*?fldCharType="separate".*?fldCharType="end"', xml, re.S)
+
+
 def test_sommaire_et_exemple(modele):
+    _verifie_champ(_xml(modele[1], "word/document.xml"), "TOC")
     assert 'TOC \\o "1-3" \\h \\z \\u' in _xml(modele[1], "word/document.xml")
     assert "Clic droit, Mettre à jour le champ" in _xml(modele[1], "word/document.xml")
     doc = ouvrir_modele_pour_test(modele[1])
@@ -148,3 +162,26 @@ def test_logo_absent(projet):
     (projet / "logos" / "e-leclerc-horizontal.png").unlink()
     with pytest.raises(LogoIntrouvableError, match="e-leclerc-horizontal.png"):
         generer_dossier(lire_charte(projet / "charte.toml"), projet / "d.dotx", projet)
+
+
+def test_stylewitheffects_retire(modele):
+    with zipfile.ZipFile(modele[1]) as z:
+        assert not any("stylesWithEffects" in n for n in z.namelist())
+        assert "stylesWithEffects" not in z.read("[Content_Types].xml").decode()
+        assert "stylesWithEffects" not in z.read("word/_rels/document.xml.rels").decode()
+    ouvrir_modele_pour_test(modele[1])
+
+
+def test_metadonnees(modele):
+    charte, chemin = modele
+    p = ouvrir_modele_pour_test(chemin).core_properties
+    assert p.title == "Modèle de dossier"
+    assert p.author == charte.document.societe
+    assert "python-docx" not in p.comments
+    assert p.created.year >= 2026 and p.modified.year >= 2026
+
+
+def test_styles_dans_la_galerie(modele):
+    st = ouvrir_modele_pour_test(modele[1]).styles
+    for nom in ("Titre du document", "Chiffre clé", "Lien"):
+        assert st[nom].quick_style is True
