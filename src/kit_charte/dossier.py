@@ -199,6 +199,8 @@ def generer_dossier(charte: Charte, sortie: Path, racine: Path) -> Path:
 
     _metadonnees(doc, charte)
     _retirer_styles_with_effects(doc)
+    # Le modèle par défaut de python-docx écrit w:zoom sans w:percent, obligatoire au schéma.
+    doc.settings.element.find(qn("w:zoom")).set(qn("w:percent"), "100")
 
     sortie = Path(sortie)
     sortie.parent.mkdir(parents=True, exist_ok=True)

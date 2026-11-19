@@ -72,16 +72,13 @@ def regeneres(tmp_path_factory):
     return generer_modeles(tmp_path_factory.mktemp("frais"))
 
 
-# Erreur connue du dossier Word, non corrigée ici : w:zoom sans w:percent dans word/settings.xml (hérité du modèle python-docx).
-# strict : le test repasse en échec dès que l'erreur est corrigée, pour retirer ce marqueur.
-XFAIL_ZOOM = pytest.mark.xfail(strict=True, reason="word/settings.xml : w:zoom sans attribut w:percent")
 
 
-@pytest.mark.parametrize("modele", [pytest.param("dossier.dotx", marks=XFAIL_ZOOM), "presentation.potx"])
+@pytest.mark.parametrize("modele", ["dossier.dotx", "presentation.potx"])
 def test_modele_commite_valide(modele):
     assert not _erreurs(RACINE / "modeles" / modele)
 
 
-@pytest.mark.parametrize("indice", [pytest.param(0, marks=XFAIL_ZOOM, id="dossier"), pytest.param(1, id="presentation")])
+@pytest.mark.parametrize("indice", [pytest.param(0, id="dossier"), pytest.param(1, id="presentation")])
 def test_modele_genere_valide(regeneres, indice):
     assert not _erreurs(regeneres[indice])
